@@ -71,7 +71,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          'Polly',
+                          'RahRah',
                           style: TextStyle(
                             fontFamily: 'Inter',
                             fontSize: 24,

@@ -46,117 +46,204 @@ class _HomeScreenState extends State<HomeScreen> {
         children: [
           const SizedBox(height: 60),
           
-          // Header
+          // Header Section
           Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(
-                'Hello, Polly!',
-                style: TextStyle(
-                  fontFamily: 'Inter',
-                  fontSize: 24,
-                  fontWeight: FontWeight.w700,
-                  color: const Color(0xFF1A2128),
+              // Profile Picture
+              CircleAvatar(
+                radius: 25,
+                backgroundColor: Colors.pink.shade100,
+                child: Icon(
+                  Icons.person,
+                  color: Colors.pink.shade600,
+                  size: 30,
                 ),
               ),
-              Row(
+              
+              const SizedBox(width: 16),
+              
+              // Welcome Message
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    RichText(
+                      text: TextSpan(
+                        children: [
+                          TextSpan(
+                            text: 'Hello ',
+                            style: TextStyle(
+                              fontFamily: 'Inter',
+                              fontSize: 18,
+                              fontWeight: FontWeight.w600,
+                              color: const Color(0xFF1A2128),
+                            ),
+                          ),
+                          TextSpan(
+                            text: 'Rahrah',
+                            style: TextStyle(
+                              fontFamily: 'Inter',
+                              fontSize: 18,
+                              fontWeight: FontWeight.w600,
+                              color: Colors.pink.shade500,
+                            ),
+                          ),
+                          TextSpan(
+                            text: ' 👋',
+                            style: TextStyle(
+                              fontFamily: 'Inter',
+                              fontSize: 18,
+                              fontWeight: FontWeight.w600,
+                              color: const Color(0xFF1A2128),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      'KNUST, Kumasi',
+                      style: TextStyle(
+                        fontFamily: 'Inter',
+                        fontSize: 14,
+                        color: Colors.grey.shade600,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              
+              // Notifications Icon
+              Stack(
                 children: [
-                  Icon(
-                    Icons.search,
-                    color: Colors.grey.shade600,
-                    size: 24,
-                  ),
-                  const SizedBox(width: 16),
                   Icon(
                     Icons.notifications_outlined,
                     color: Colors.grey.shade600,
                     size: 24,
+                  ),
+                  Positioned(
+                    right: 0,
+                    top: 0,
+                    child: Container(
+                      width: 8,
+                      height: 8,
+                      decoration: BoxDecoration(
+                        color: Colors.red.shade500,
+                        shape: BoxShape.circle,
+                      ),
+                    ),
                   ),
                 ],
               ),
             ],
           ),
           
-          const SizedBox(height: 32),
+          const SizedBox(height: 24),
           
-          // Progress Section
-          Container(
-            padding: const EdgeInsets.all(24),
-            decoration: BoxDecoration(
-              color: Colors.pink.shade50,
-              borderRadius: BorderRadius.circular(20),
-            ),
-            child: Row(
-              children: [
-                // Circular Progress
-                Stack(
-                  alignment: Alignment.center,
-                  children: [
-                    SizedBox(
-                      width: 80,
-                      height: 80,
-                      child: CircularProgressIndicator(
-                        value: 0.23,
-                        strokeWidth: 8,
-                        backgroundColor: Colors.pink.shade200,
-                        valueColor: AlwaysStoppedAnimation<Color>(Colors.pink.shade500),
-                      ),
-                    ),
-                    Text(
-                      '23%',
-                      style: TextStyle(
-                        fontFamily: 'Inter',
-                        fontSize: 16,
-                        fontWeight: FontWeight.w700,
-                        color: Colors.pink.shade600,
-                      ),
-                    ),
-                  ],
-                ),
-                
-                const SizedBox(width: 20),
-                
-                // Progress Text
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+          // Search and Filter Bar
+          Row(
+            children: [
+              Expanded(
+                child: Container(
+                  height: 48,
+                  decoration: BoxDecoration(
+                    color: Colors.grey.shade50,
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(color: Colors.grey.shade200),
+                  ),
+                  child: Row(
                     children: [
-                      Text(
-                        'Your Progress',
-                        style: TextStyle(
-                          fontFamily: 'Inter',
-                          fontSize: 18,
-                          fontWeight: FontWeight.w600,
-                          color: const Color(0xFF1A2128),
-                        ),
+                      const SizedBox(width: 16),
+                      Icon(
+                        Icons.search,
+                        color: Colors.grey.shade500,
+                        size: 20,
                       ),
-                      const SizedBox(height: 8),
-                      Row(
-                        children: [
-                          Text(
-                            '8',
-                            style: TextStyle(
-                              fontFamily: 'Inter',
-                              fontSize: 24,
-                              fontWeight: FontWeight.w700,
-                              color: Colors.pink.shade500,
-                            ),
-                          ),
-                          Text(
-                            ' / 13 days completed',
-                            style: TextStyle(
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: TextField(
+                          decoration: InputDecoration(
+                            hintText: 'Search Games, Videos...',
+                            hintStyle: TextStyle(
                               fontFamily: 'Inter',
                               fontSize: 14,
-                              color: Colors.grey.shade600,
+                              color: Colors.grey.shade500,
                             ),
+                            border: InputBorder.none,
                           ),
-                        ],
+                        ),
                       ),
                     ],
                   ),
                 ),
-              ],
+              ),
+              const SizedBox(width: 12),
+              Container(
+                width: 48,
+                height: 48,
+                decoration: BoxDecoration(
+                  color: Colors.grey.shade50,
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(color: Colors.grey.shade200),
+                ),
+                child: Icon(
+                  Icons.filter_list,
+                  color: Colors.grey.shade600,
+                  size: 20,
+                ),
+              ),
+            ],
+          ),
+          
+          const SizedBox(height: 24),
+          
+          // Progress and Stats Cards
+          Row(
+            children: [
+              Expanded(
+                child: _buildStatsCard('23%', 'Progress', Icons.trending_up, Colors.pink),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: _buildStatsCard('8 days', 'Streaks', Icons.local_fire_department, Colors.orange),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: _buildStatsCard('12', 'Lessons', Icons.school, Colors.pink),
+              ),
+            ],
+          ),
+          
+          const SizedBox(height: 24),
+          
+          // Welcome Back Message
+          Text(
+            'Welcome Back, Queen! 👑',
+            style: TextStyle(
+              fontFamily: 'Inter',
+              fontSize: 20,
+              fontWeight: FontWeight.w700,
+              color: const Color(0xFF1A2128),
             ),
+          ),
+          
+          const SizedBox(height: 24),
+          
+          // Reward/Achievement Tabs
+          Row(
+            children: [
+              Expanded(
+                child: _buildTab('Rewards', Icons.emoji_events, true),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: _buildTab('Achievements', Icons.female, false),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: _buildTab('Badges', Icons.workspace_premium, false),
+              ),
+            ],
           ),
           
           const SizedBox(height: 24),

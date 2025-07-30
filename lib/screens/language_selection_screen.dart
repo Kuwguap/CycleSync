@@ -14,11 +14,10 @@ class _LanguageSelectionScreenState extends State<LanguageSelectionScreen> {
 
   final List<String> _languages = [
     'English',
-    'Thai',
-    'Urdu',
-    'Bengali',
-    'Filipino',
-    'Hindi',
+    'Twi',
+    'Ewe',
+    'Dagbani',
+    'Fante',
   ];
 
   @override
