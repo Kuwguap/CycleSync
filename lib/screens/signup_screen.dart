@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import '../services/auth_service.dart';
 import 'create_profile_screen.dart';
 
 class SignupScreen extends StatefulWidget {
@@ -16,6 +17,8 @@ class _SignupScreenState extends State<SignupScreen> {
   final _confirmPasswordController = TextEditingController();
   bool _isPasswordVisible = false;
   bool _isConfirmPasswordVisible = false;
+  bool _isLoading = false;
+  final AuthService _authService = AuthService();
 
   @override
   void dispose() {
@@ -132,12 +135,7 @@ class _SignupScreenState extends State<SignupScreen> {
                 width: double.infinity,
                 height: 56,
                 child: ElevatedButton(
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => const CreateProfileScreen()),
-                    );
-                  },
+                  onPressed: _isLoading ? null : _handleSignUp,
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.pink.shade500,
                     foregroundColor: Colors.white,
@@ -146,15 +144,24 @@ class _SignupScreenState extends State<SignupScreen> {
                     ),
                     elevation: 0,
                   ),
-                  child: Text(
-                    'Sign Up',
-                    style: TextStyle(
-                      fontFamily: 'Inter',
-                      fontSize: 18,
-                      fontWeight: FontWeight.w600,
-                      color: Colors.white,
-                    ),
-                  ),
+                                          child: _isLoading
+                            ? SizedBox(
+                                width: 20,
+                                height: 20,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                  valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                                ),
+                              )
+                            : Text(
+                                'Sign Up',
+                                style: TextStyle(
+                                  fontFamily: 'Inter',
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.w600,
+                                  color: Colors.white,
+                                ),
+                              ),
                 ),
               ),
               
@@ -337,6 +344,64 @@ class _SignupScreenState extends State<SignupScreen> {
       decoration: BoxDecoration(
         shape: BoxShape.circle,
         color: isActive ? Colors.pink.shade500 : Colors.grey.shade300,
+      ),
+    );
+  }
+
+  Future<void> _handleSignUp() async {
+    if (_fullnameController.text.isEmpty ||
+        _emailController.text.isEmpty ||
+        _passwordController.text.isEmpty ||
+        _confirmPasswordController.text.isEmpty) {
+      _showSnackBar('Please fill in all fields');
+      return;
+    }
+
+    if (_passwordController.text != _confirmPasswordController.text) {
+      _showSnackBar('Passwords do not match');
+      return;
+    }
+
+    if (_passwordController.text.length < 6) {
+      _showSnackBar('Password must be at least 6 characters');
+      return;
+    }
+
+    setState(() {
+      _isLoading = true;
+    });
+
+    try {
+      await _authService.signUpWithEmailAndPassword(
+        email: _emailController.text.trim(),
+        password: _passwordController.text,
+        fullName: _fullnameController.text.trim(),
+      );
+
+      if (mounted) {
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => const CreateProfileScreen()),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        _showSnackBar(e.toString());
+      }
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+      }
+    }
+  }
+
+  void _showSnackBar(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message),
+        backgroundColor: Colors.red.shade500,
       ),
     );
   }

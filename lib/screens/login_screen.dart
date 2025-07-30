@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import '../services/auth_service.dart';
 import 'signup_screen.dart';
 import 'home_screen.dart';
 
@@ -11,13 +12,15 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
-  final _usernameController = TextEditingController();
+  final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   bool _isPasswordVisible = false;
+  bool _isLoading = false;
+  final AuthService _authService = AuthService();
 
   @override
   void dispose() {
-    _usernameController.dispose();
+    _emailController.dispose();
     _passwordController.dispose();
     super.dispose();
   }
@@ -99,11 +102,11 @@ class _LoginScreenState extends State<LoginScreen> {
                     
                     const SizedBox(height: 24),
                     
-                    // Username field
+                    // Email field
                     _buildTextField(
-                      controller: _usernameController,
-                      hintText: 'Username',
-                      prefixIcon: Icons.person_outline,
+                      controller: _emailController,
+                      hintText: 'Email Address',
+                      prefixIcon: Icons.email_outlined,
                     ),
                     
                     const SizedBox(height: 16),
@@ -122,9 +125,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     Align(
                       alignment: Alignment.centerRight,
                       child: TextButton(
-                        onPressed: () {
-                          // Handle forgot password
-                        },
+                        onPressed: _handleForgotPassword,
                         child: Text(
                           'Forgot Password?',
                           style: TextStyle(
@@ -144,13 +145,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       width: double.infinity,
                       height: 56,
                       child: ElevatedButton(
-                        onPressed: () {
-                          Navigator.pushAndRemoveUntil(
-                            context,
-                            MaterialPageRoute(builder: (context) => const HomeScreen()),
-                            (route) => false,
-                          );
-                        },
+                        onPressed: _isLoading ? null : _handleLogin,
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Colors.pink.shade500,
                           foregroundColor: Colors.white,
@@ -159,15 +154,24 @@ class _LoginScreenState extends State<LoginScreen> {
                           ),
                           elevation: 0,
                         ),
-                        child: Text(
-                          'Log In',
-                          style: TextStyle(
-                            fontFamily: 'Inter',
-                            fontSize: 18,
-                            fontWeight: FontWeight.w600,
-                            color: Colors.white,
-                          ),
-                        ),
+                        child: _isLoading
+                            ? SizedBox(
+                                width: 20,
+                                height: 20,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                  valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                                ),
+                              )
+                            : Text(
+                                'Log In',
+                                style: TextStyle(
+                                  fontFamily: 'Inter',
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.w600,
+                                  color: Colors.white,
+                                ),
+                              ),
                       ),
                     ),
                   ],
@@ -348,6 +352,69 @@ class _LoginScreenState extends State<LoginScreen> {
       decoration: BoxDecoration(
         shape: BoxShape.circle,
         color: isActive ? Colors.pink.shade500 : Colors.grey.shade300,
+      ),
+    );
+  }
+
+  Future<void> _handleLogin() async {
+    if (_emailController.text.isEmpty || _passwordController.text.isEmpty) {
+      _showSnackBar('Please fill in all fields');
+      return;
+    }
+
+    setState(() {
+      _isLoading = true;
+    });
+
+    try {
+      await _authService.signInWithEmailAndPassword(
+        email: _emailController.text.trim(),
+        password: _passwordController.text,
+      );
+
+      if (mounted) {
+        Navigator.pushAndRemoveUntil(
+          context,
+          MaterialPageRoute(builder: (context) => const HomeScreen()),
+          (route) => false,
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        _showSnackBar(e.toString());
+      }
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+      }
+    }
+  }
+
+  Future<void> _handleForgotPassword() async {
+    if (_emailController.text.isEmpty) {
+      _showSnackBar('Please enter your email address');
+      return;
+    }
+
+    try {
+      await _authService.resetPassword(_emailController.text.trim());
+      if (mounted) {
+        _showSnackBar('Password reset email sent!');
+      }
+    } catch (e) {
+      if (mounted) {
+        _showSnackBar(e.toString());
+      }
+    }
+  }
+
+  void _showSnackBar(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message),
+        backgroundColor: Colors.red.shade500,
       ),
     );
   }

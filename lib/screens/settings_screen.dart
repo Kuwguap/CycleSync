@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import '../services/auth_service.dart';
 import 'notifications_screen.dart';
 import 'stories_screen.dart';
+import 'login_screen.dart';
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
@@ -11,6 +13,7 @@ class SettingsScreen extends StatefulWidget {
 }
 
 class _SettingsScreenState extends State<SettingsScreen> {
+  final AuthService _authService = AuthService();
   @override
   Widget build(BuildContext context) {
     SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
@@ -148,7 +151,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
               _buildSettingsItem('My Subscription', Icons.card_membership, () {}),
               _buildSettingsItem('Help & Support', Icons.help, () {}),
               _buildSettingsItem('About App', Icons.info, () {}),
-              _buildSettingsItem('Log Out', Icons.logout, () {}, isDestructive: true),
+              _buildSettingsItem('Log Out', Icons.logout, _handleLogOut, isDestructive: true),
             ]),
             
             const SizedBox(height: 100),
@@ -200,5 +203,27 @@ class _SettingsScreenState extends State<SettingsScreen> {
         onTap: onTap,
       ),
     );
+  }
+
+  Future<void> _handleLogOut() async {
+    try {
+      await _authService.signOut();
+      if (mounted) {
+        Navigator.pushAndRemoveUntil(
+          context,
+          MaterialPageRoute(builder: (context) => const LoginScreen()),
+          (route) => false,
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Error logging out: $e'),
+            backgroundColor: Colors.red.shade500,
+          ),
+        );
+      }
+    }
   }
 } 
