@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'language_selection_screen.dart';
 
 class ChooseAvatarScreen extends StatefulWidget {
   const ChooseAvatarScreen({super.key});
@@ -15,23 +14,27 @@ class _ChooseAvatarScreenState extends State<ChooseAvatarScreen> {
   final List<Map<String, dynamic>> _avatars = [
     {
       'color': Colors.pink,
-      'icon': Icons.person,
+      'image': 'assets/images/pink.png',
       'name': 'Pink Avatar',
+      'isImage': true,
     },
     {
       'color': Colors.green,
-      'icon': Icons.person_outline,
+      'image': 'assets/images/green.png',
       'name': 'Green Avatar',
+      'isImage': true,
     },
     {
       'color': Colors.brown,
-      'icon': Icons.face,
+      'image': 'assets/images/brown.png',
       'name': 'Brown Avatar',
+      'isImage': true,
     },
     {
       'color': Colors.yellow,
-      'icon': Icons.emoji_emotions,
+      'image': 'assets/images/yellow.png',
       'name': 'Yellow Avatar',
+      'isImage': true,
     },
   ];
 
@@ -126,17 +129,12 @@ class _ChooseAvatarScreenState extends State<ChooseAvatarScreen> {
               
               const SizedBox(height: 40),
               
-              // Next Button
+              // Confirm Button
               SizedBox(
                 width: double.infinity,
                 height: 56,
                 child: ElevatedButton(
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => const LanguageSelectionScreen()),
-                    );
-                  },
+                  onPressed: _handleConfirm,
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.pink.shade500,
                     foregroundColor: Colors.white,
@@ -146,7 +144,7 @@ class _ChooseAvatarScreenState extends State<ChooseAvatarScreen> {
                     elevation: 0,
                   ),
                   child: Text(
-                    'Next',
+                    'Confirm',
                     style: TextStyle(
                       fontFamily: 'Inter',
                       fontSize: 18,
@@ -155,20 +153,6 @@ class _ChooseAvatarScreenState extends State<ChooseAvatarScreen> {
                     ),
                   ),
                 ),
-              ),
-              
-              const SizedBox(height: 40),
-              
-              // Page Indicators
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  _buildPageIndicator(true),
-                  const SizedBox(width: 8),
-                  _buildPageIndicator(true),
-                  const SizedBox(width: 8),
-                  _buildPageIndicator(true),
-                ],
               ),
               
               const SizedBox(height: 40),
@@ -209,11 +193,30 @@ class _ChooseAvatarScreenState extends State<ChooseAvatarScreen> {
                 color: avatar['color'],
                 shape: BoxShape.circle,
               ),
-              child: Icon(
-                avatar['icon'],
-                color: Colors.white,
-                size: 30,
-              ),
+              child: avatar['isImage'] 
+                ? ClipOval(
+                    child: Image.asset(
+                      avatar['image'],
+                      width: 60,
+                      height: 60,
+                      fit: BoxFit.cover,
+                      errorBuilder: (context, error, stackTrace) {
+                        print('Error loading image: ${avatar['image']}');
+                        print('Error: $error');
+                        // Fallback to icon if image fails
+                        return Icon(
+                          _getFallbackIcon(avatar['name']),
+                          color: Colors.white,
+                          size: 30,
+                        );
+                      },
+                    ),
+                  )
+                : Icon(
+                    avatar['icon'],
+                    color: Colors.white,
+                    size: 30,
+                  ),
             ),
             const SizedBox(height: 8),
             Text(
@@ -232,14 +235,23 @@ class _ChooseAvatarScreenState extends State<ChooseAvatarScreen> {
     );
   }
   
-  Widget _buildPageIndicator(bool isActive) {
-    return Container(
-      width: 8,
-      height: 8,
-      decoration: BoxDecoration(
-        shape: BoxShape.circle,
-        color: isActive ? Colors.pink.shade500 : Colors.grey.shade300,
-      ),
-    );
+  IconData _getFallbackIcon(String avatarName) {
+    switch (avatarName) {
+      case 'Pink Avatar':
+        return Icons.person;
+      case 'Green Avatar':
+        return Icons.person_outline;
+      case 'Brown Avatar':
+        return Icons.face;
+      case 'Yellow Avatar':
+        return Icons.emoji_emotions;
+      default:
+        return Icons.person;
+    }
   }
-} 
+
+  void _handleConfirm() {
+    final selectedAvatar = _avatars[_selectedAvatarIndex]['name'];
+    Navigator.pop(context, selectedAvatar);
+  }
+}

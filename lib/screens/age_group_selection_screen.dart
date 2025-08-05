@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'create_profile_success_screen.dart';
 
 class AgeGroupSelectionScreen extends StatefulWidget {
   const AgeGroupSelectionScreen({super.key});
@@ -11,11 +10,6 @@ class AgeGroupSelectionScreen extends StatefulWidget {
 
 class _AgeGroupSelectionScreenState extends State<AgeGroupSelectionScreen> {
   String? _selectedAgeGroup;
-
-  final List<String> _ageGroups = [
-    '10-12', '13-15', '16-20', '21-25',
-    '26-30', '31-35', '36-39', '39-44'
-  ];
 
   @override
   Widget build(BuildContext context) {
@@ -94,17 +88,12 @@ class _AgeGroupSelectionScreenState extends State<AgeGroupSelectionScreen> {
               
               const SizedBox(height: 40),
               
-              // Next Button
+              // Confirm Button
               SizedBox(
                 width: double.infinity,
                 height: 56,
                 child: ElevatedButton(
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => const CreateProfileSuccessScreen()),
-                    );
-                  },
+                  onPressed: _selectedAgeGroup != null ? _handleConfirm : null,
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.pink.shade500,
                     foregroundColor: Colors.white,
@@ -114,7 +103,7 @@ class _AgeGroupSelectionScreenState extends State<AgeGroupSelectionScreen> {
                     elevation: 0,
                   ),
                   child: Text(
-                    'Next',
+                    'Confirm',
                     style: TextStyle(
                       fontFamily: 'Inter',
                       fontSize: 18,
@@ -123,20 +112,6 @@ class _AgeGroupSelectionScreenState extends State<AgeGroupSelectionScreen> {
                     ),
                   ),
                 ),
-              ),
-              
-              const SizedBox(height: 40),
-              
-              // Page Indicators
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  _buildPageIndicator(false),
-                  const SizedBox(width: 8),
-                  _buildPageIndicator(false),
-                  const SizedBox(width: 8),
-                  _buildPageIndicator(true),
-                ],
               ),
               
               const SizedBox(height: 40),
@@ -180,14 +155,9 @@ class _AgeGroupSelectionScreenState extends State<AgeGroupSelectionScreen> {
     );
   }
   
-  Widget _buildPageIndicator(bool isActive) {
-    return Container(
-      width: 8,
-      height: 8,
-      decoration: BoxDecoration(
-        shape: BoxShape.circle,
-        color: isActive ? Colors.pink.shade500 : Colors.grey.shade300,
-      ),
-    );
+  void _handleConfirm() {
+    if (_selectedAgeGroup != null) {
+      Navigator.pop(context, _selectedAgeGroup);
+    }
   }
 } 

@@ -24,19 +24,15 @@ class FlowCycleScreen extends StatelessWidget {
           children: [
             const SizedBox(height: 60),
             
-            // Profile Image - Woman on bed with phone
+            // Profile Image - Food image
             Container(
               width: 338,
               height: 338,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                color: Colors.pink.shade50,
-              ),
-              child: Center(
-                child: Icon(
-                  Icons.phone_android,
-                  size: 80,
-                  color: Colors.pink.shade300,
+                image: const DecorationImage(
+                  image: AssetImage('assets/images/food.jpg'),
+                  fit: BoxFit.cover,
                 ),
               ),
             ),

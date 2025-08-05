@@ -12,7 +12,6 @@ class CreateProfileSuccessScreen extends StatefulWidget {
 class _CreateProfileSuccessScreenState extends State<CreateProfileSuccessScreen> {
   final _nicknameController = TextEditingController();
   String? _selectedAgeGroup;
-  String? _selectedAvatar;
 
   final List<String> _ageGroups = [
     '10-12', '13-15', '16-20', '21-25',

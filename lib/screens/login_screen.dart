@@ -60,19 +60,15 @@ class _LoginScreenState extends State<LoginScreen> {
               
               const SizedBox(height: 32),
               
-              // Profile Image - Woman with blanket and mug
+              // Profile Image - Girl image
               Container(
                 width: 200,
                 height: 200,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  color: Colors.pink.shade50,
-                ),
-                child: Center(
-                  child: Icon(
-                    Icons.coffee,
-                    size: 60,
-                    color: Colors.pink.shade300,
+                  image: const DecorationImage(
+                    image: AssetImage('assets/images/girl.png'),
+                    fit: BoxFit.cover,
                   ),
                 ),
               ),
@@ -357,8 +353,13 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   Future<void> _handleLogin() async {
-    if (_emailController.text.isEmpty || _passwordController.text.isEmpty) {
-      _showSnackBar('Please fill in all fields');
+    if (_emailController.text.trim().isEmpty) {
+      _showSnackBar('Please enter your email address');
+      return;
+    }
+
+    if (_passwordController.text.isEmpty) {
+      _showSnackBar('Please enter your password');
       return;
     }
 
@@ -367,12 +368,27 @@ class _LoginScreenState extends State<LoginScreen> {
     });
 
     try {
-      await _authService.signInWithEmailAndPassword(
+      final user = await _authService.signInWithEmailAndPassword(
         email: _emailController.text.trim(),
         password: _passwordController.text,
       );
 
-      if (mounted) {
+      if (mounted && user != null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: const Text(
+              'Login successful!',
+              style: TextStyle(color: Colors.white),
+            ),
+            backgroundColor: Colors.green.shade500,
+            duration: const Duration(seconds: 2),
+            behavior: SnackBarBehavior.floating,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(8),
+            ),
+          ),
+        );
+        
         Navigator.pushAndRemoveUntil(
           context,
           MaterialPageRoute(builder: (context) => const HomeScreen()),
@@ -413,8 +429,16 @@ class _LoginScreenState extends State<LoginScreen> {
   void _showSnackBar(String message) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text(message),
+        content: Text(
+          message.replaceAll('Exception: ', '').replaceAll('Exception:', ''),
+          style: const TextStyle(color: Colors.white),
+        ),
         backgroundColor: Colors.red.shade500,
+        duration: const Duration(seconds: 3),
+        behavior: SnackBarBehavior.floating,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(8),
+        ),
       ),
     );
   }

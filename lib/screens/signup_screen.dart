@@ -63,18 +63,16 @@ class _SignupScreenState extends State<SignupScreen> {
               
               const SizedBox(height: 32),
               
-              // Icon
+              // Robot Image
               Container(
                 width: 80,
                 height: 80,
                 decoration: BoxDecoration(
-                  color: Colors.lightBlue.shade100,
                   shape: BoxShape.circle,
-                ),
-                child: Icon(
-                  Icons.person_outline,
-                  size: 40,
-                  color: Colors.lightBlue.shade600,
+                  image: const DecorationImage(
+                    image: AssetImage('assets/images/robot.png'),
+                    fit: BoxFit.cover,
+                  ),
                 ),
               ),
               
@@ -349,11 +347,23 @@ class _SignupScreenState extends State<SignupScreen> {
   }
 
   Future<void> _handleSignUp() async {
-    if (_fullnameController.text.isEmpty ||
-        _emailController.text.isEmpty ||
-        _passwordController.text.isEmpty ||
-        _confirmPasswordController.text.isEmpty) {
-      _showSnackBar('Please fill in all fields');
+    if (_fullnameController.text.trim().isEmpty) {
+      _showSnackBar('Please enter your full name');
+      return;
+    }
+
+    if (_emailController.text.trim().isEmpty) {
+      _showSnackBar('Please enter your email address');
+      return;
+    }
+
+    if (_passwordController.text.isEmpty) {
+      _showSnackBar('Please enter a password');
+      return;
+    }
+
+    if (_confirmPasswordController.text.isEmpty) {
+      _showSnackBar('Please confirm your password');
       return;
     }
 
@@ -372,16 +382,32 @@ class _SignupScreenState extends State<SignupScreen> {
     });
 
     try {
-      await _authService.signUpWithEmailAndPassword(
+      final user = await _authService.signUpWithEmailAndPassword(
         email: _emailController.text.trim(),
         password: _passwordController.text,
         fullName: _fullnameController.text.trim(),
       );
 
-      if (mounted) {
-        Navigator.push(
+      if (mounted && user != null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: const Text(
+              'Account created successfully!',
+              style: TextStyle(color: Colors.white),
+            ),
+            backgroundColor: Colors.green.shade500,
+            duration: const Duration(seconds: 2),
+            behavior: SnackBarBehavior.floating,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(8),
+            ),
+          ),
+        );
+        
+        Navigator.pushAndRemoveUntil(
           context,
           MaterialPageRoute(builder: (context) => const CreateProfileScreen()),
+          (route) => false,
         );
       }
     } catch (e) {
@@ -400,8 +426,16 @@ class _SignupScreenState extends State<SignupScreen> {
   void _showSnackBar(String message) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text(message),
+        content: Text(
+          message.replaceAll('Exception: ', '').replaceAll('Exception:', ''),
+          style: const TextStyle(color: Colors.white),
+        ),
         backgroundColor: Colors.red.shade500,
+        duration: const Duration(seconds: 3),
+        behavior: SnackBarBehavior.floating,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(8),
+        ),
       ),
     );
   }

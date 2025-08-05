@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'services/auth_service.dart';
 import 'screens/welcome_screen.dart';
 
 void main() {
-  // Add a test user for debugging
+  // Initialize Flutter
+  WidgetsFlutterBinding.ensureInitialized();
+  
+  // Initialize auth service
   final authService = AuthService();
   authService.addTestUser();
   

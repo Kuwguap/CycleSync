@@ -7,6 +7,8 @@ class WelcomeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    print('🎨 Building WelcomeScreen...');
+    
     // Hide system UI overlays (status bar and navigation bar)
     SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
     
@@ -24,12 +26,13 @@ class WelcomeScreen extends StatelessWidget {
           children: [
             const SizedBox(height: 60),
             
-            // Profile Image
+            // Profile Image with fallback
             Container(
               width: 338,
               height: 338,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
+                color: Colors.pink.shade100,
                 image: const DecorationImage(
                   image: AssetImage('assets/images/yoga_woman.png'),
                   fit: BoxFit.cover,
@@ -112,6 +115,7 @@ class WelcomeScreen extends StatelessWidget {
             // Next Button
             GestureDetector(
               onTap: () {
+                print('👉 Next button tapped');
                 Navigator.push(
                   context,
                   MaterialPageRoute(builder: (context) => const FlowCycleScreen()),
